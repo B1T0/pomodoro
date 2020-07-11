@@ -38,16 +38,17 @@ class AppDelegate: NSObject, NSApplicationDelegate,
     }
     
     func constructMenu() {
+        menu.addItem(NSMenuItem(title: "No Timer started", action: nil, keyEquivalent: ""))
         menu.addItem(NSMenuItem(title: "Start Task",
                                 action: #selector(AppDelegate.update(_:)),
-                                keyEquivalent: "t"))
+                                keyEquivalent: ""))
         menu.addItem(NSMenuItem(title: "Start Break",
                                 action: #selector(AppDelegate.updateBreak(_:)),
-                                keyEquivalent: "b"))
+                                keyEquivalent: ""))
         menu.addItem(NSMenuItem.separator())
         menu.addItem(NSMenuItem(title: "Quit Pomodoro",
                                 action: #selector(NSApplication.terminate(_:)),
-                                keyEquivalent: "q"))
+                                keyEquivalent: ""))
         
         statusItem.menu = menu
     }
@@ -62,14 +63,12 @@ class AppDelegate: NSObject, NSApplicationDelegate,
             counterLock = true
             renameTaskItem(item_name_old: "Start Task",
                            item_name_new: "Stop Task",
-                           key_name: "t",
-                           item_position: 0)
+                           item_position: 1)
         } else {
             reset()
             renameTaskItem(item_name_old: "Stop Task",
                            item_name_new: "Start Task",
-                           key_name: "t",
-                           item_position: 0)
+                           item_position: 1)
         }
     }
 
@@ -83,36 +82,41 @@ class AppDelegate: NSObject, NSApplicationDelegate,
             breakLock = true
             renameBreakItem(item_name_old: "Start Break",
                             item_name_new: "Stop Break",
-                            key_name: "b",
-                            item_position: 1)
+                            item_position: 2)
         } else {
             reset()
             renameBreakItem(item_name_old: "Stop Break",
                             item_name_new: "Start Break",
-                            key_name: "b",
-                            item_position: 1)
+                            item_position: 2)
         }
     }
 
     func renameTaskItem(item_name_old: String,
                         item_name_new: String,
-                        key_name: String,
                         item_position: Int) {
         menu.removeItem(menu.item(withTitle: item_name_old)!)
         menu.insertItem(withTitle: item_name_new,
                         action: #selector(AppDelegate.update(_:)),
-                        keyEquivalent: key_name,
+                        keyEquivalent: "",
                         at: item_position)
     }
 
     func renameBreakItem(item_name_old: String,
                          item_name_new: String,
-                         key_name: String,
                          item_position: Int) {
         menu.removeItem(menu.item(withTitle: item_name_old)!)
         menu.insertItem(withTitle: item_name_new,
                         action: #selector(AppDelegate.updateBreak(_:)),
-                        keyEquivalent: key_name,
+                        keyEquivalent: "",
+                        at: item_position)
+    }
+    
+    func renameTimerItem(item_name_new: String,
+                         item_position: Int) {
+        menu.removeItem(menu.item(at: 0)!)
+        menu.insertItem(withTitle: item_name_new,
+                        action: nil,
+                        keyEquivalent: "",
                         at: item_position)
     }
 
@@ -132,13 +136,15 @@ class AppDelegate: NSObject, NSApplicationDelegate,
             let countDownLabel = minutes + ":" + seconds
             count -= 1
             print(countDownLabel)
+            renameTimerItem(item_name_new: countDownLabel,
+                            item_position: 0
+            )
         } else {
             showNotification(content: "Your task is over. Time for a break!")
             reset()
             renameTaskItem(item_name_old: "Stop Task",
                            item_name_new: "Start Task",
-                           key_name: "t",
-                           item_position: 0)
+                           item_position: 1)
         }
     }
 
@@ -154,8 +160,7 @@ class AppDelegate: NSObject, NSApplicationDelegate,
             reset()
             renameBreakItem(item_name_old: "Stop Break",
                             item_name_new: "Start Break",
-                            key_name: "b",
-                            item_position: 1)
+                            item_position: 2)
         }
     }
 
